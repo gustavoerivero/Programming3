@@ -13,13 +13,9 @@ Project corresponding to the subject Programming III of Computer Engineering of 
 
 ## Features:
 
-* 
-
-## Built with:
-
-* The MVC pattern is used.
-* The application was made in Java language.
-* The application uses PostgreSQL as a database handler.
+* Reading of numbers and factorial calculation.
+* Ordering of the numbers.
+* Count of repetitions of numbers in numerical arrangement in the range [0,9].
 
 ## Assembly Application:
 
