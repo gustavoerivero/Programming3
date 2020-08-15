@@ -365,7 +365,7 @@ DSRespuesta     :   .LONG 9; Descriptor -> Respuesta
                     LEER LRespuesta, Men11.4, DSRespuesta
                     STR_NUM DSRespuesta, Respuesta
                             
-                    While2: ;Recursividad: Si no se escoge el valor '1' o '2' se estara repitiendo el ciclo 'While2'
+                    While2: ;Si no se escoge el valor '1' o '2' se estara repitiendo el ciclo 'While2'
 
                             CMPL Respuesta, #1
                             SALTAR NEQ, EndIf
