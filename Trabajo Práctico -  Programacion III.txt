@@ -1,0 +1,721 @@
+﻿.TITLE MACROS PARA LA PANTALLA
+.PSECT Datos, NOEXE, WRT
+Blink           :  .LONG SMG$M_BLINK
+Normal          :  .LONG SMG$M_NORMAL
+Borra           :  .LONG SMG$M_ERASE_LINE
+Inversa         :  .LONG SMG$M_REVERSE
+Negrita         :  .LONG SMG$M_BOLD
+Teclado         :  .LONG 0
+Ventana         :  .LONG 0
+Pizarron        :  .LONG 0
+Pantalla        :  .LONG 0
+Tecla           :  .BYTE 0
+
+;----------------------PORTADA------------------------------------
+Men0            :  .ASCID/REPUBLICA BOLIVARIANA DE VENEZUELA/
+Men1            :  .ASCID/UNIVERSIDAD CENTROCCIDENTAL LISANDRO ALVARADO/
+Men2            :  .ASCID/DECANATO DE CIENCIA Y TECNOLOGIA/
+Men3            :  .ASCID/Simulador de Instrucciones VAX/
+Men3.1          :  .ASCID/        Trabajo Practico/
+Men4            :  .ASCID/        BARQUISIMETO   2019/
+Men4.0          :  .ASCID//
+Men4.1          :  .ASCID/Brizuela Yurisbellys      C.I.: 27.142.239/
+Men4.2          :  .ASCID/Miranda Marihec           C.I.: 26.120.075/
+Men4.3          :  .ASCID/Rivero Gustavo            C.I.: 26.772.857/
+
+;------------------EL MENU Y MENSAJES--------------------------
+Men5            :  .ASCID /Presione una Tecla para Continuar/
+Men6            :  .ASCID /1.-/
+Men7            :  .ASCID /Principal/
+Men8            :  .ASCID /2.-/
+Men9            :  .ASCID /Calcular factorial/
+
+;------------------Actividad 1---------------------------------
+Men9.1          :  .ASCID /Leer una lista de enteros hasta encontrarse con un cero/
+
+;------------------Actividad 1.1-------------------------------
+Men9.2          :  .ASCID /Calcular e imprimir factoriales/
+Men9.2.1        :  .ASCID /Arreglo de enteros:/
+Men9.2.2        :  .ASCID /Arreglo de factoriales:/
+
+;------------------Actividad 1.2-------------------------------
+Men9.0          :  .ASCID /Indicar Orden/
+Men9.3          :  .ASCID /Ordenar el listado de forma: /
+Men9.3.1        :  .ASCID /(1) Ascendente/
+Men9.3.2        :  .ASCID /(2) Descendente/
+Men9.3.3        :  .ASCID /Arreglos ordenados/
+
+;------------------Actividad 2---------------------------------
+Men10           :  .ASCID /3.-/
+Men11           :  .ASCID /Determinar repeticiones/
+Men11.1         :  .ASCID /Cargar arreglo de numeros enteros entre 0-9/
+Men11.2         :  .ASCID /Arreglo 0-9:/
+Men11.3         :  .ASCID /Repeticiones:/
+Men11.4         :  .ASCID/Continuar (1. Si  2. No): /
+Men11.5         :  .ASCID/Ingrese solo valores en el rango 0-9/
+Men11.6         :  .ASCID /Repeticiones:/
+
+Men12           :  .ASCID /MENU/
+Men13           :  .ASCID /4.-/
+Men14           :  .ASCID /Salir/
+
+;------------------Mensajes de apoyo--------------------------
+MenValor        :  .ASCID /Ingrese un valor: /
+MenValorI       :  .ASCID /Valor ingresado es incorrecto/
+MenCargado      :  .ASCID /El arreglo ha sido cargado/
+MenVacio        :  .ASCID /                                                                          /
+
+;----------------LAS VARIABLES--------------------------
+
+A               : .LONG 0; Variable de ubicacion de textos (Altura)
+B               : .LONG 0; Variable temporal para ordenamiento
+C               : .LONG 0; Variable temporal para ordenamiento
+D               : .LONG 0; Variable de ubicacion de textos (Lateral)
+
+Tamano = 100
+
+Numeros         :   .BLKL Tamano; Arreglo -> Numeros (Tamano fisico = Tamano)
+LNumeros        :   .LONG 0; Longitud -> Numeros
+DNumeros        :   .LONG 100; Descriptor -> Numeros
+                    .LONG Numeros
+
+Factoriales     :   .BLKL Tamano; Arreglo -> Factoriales (Tamano fisico = Tamano)
+LFactoriales    :   .LONG 0; Longitud -> Factoriales
+DFactoriales    :   .LONG 100; Descriptor -> Factoriales
+                    .LONG Factoriales
+
+Orden           :   .LONG 0; Variable de apoyo -> Orden (Indica el orden que se aplicará al arreglo)
+
+AOrden          :   .BLKL Tamano; Arreglo -> Orden (Tamano fisico = Tamano)
+LOrden          :   .LONG 0; Longitud -> Orden
+DOrden          :   .LONG 100; Descriptor -> Orden
+                    .LONG AOrden
+
+SOrden          :   .BLKL Tamano; String -> Orden
+DSOrden         :   .LONG 100; Descriptor -> Orden
+                    .LONG SOrden
+
+Auxiliar        :   .LONG 0; Variable de apoyo -> Auxiliar (Variable para pasar valores String a un Arreglo de Numeros)
+LAuxiliar       :   .LONG 0; Longitud -> Auxiliar
+SAuxiliar       :   .BLKL Tamano; String -> Auxiliar
+DAuxiliar       :   .LONG 100; Descriptor -> Auxiliar
+                    .LONG SAuxiliar
+
+INumero         :   .LONG 0; Variable de apoyo -> INumero (Variable para Imprimir Numeros)
+LINumero        :   .LONG 0; Longitud -> INumero
+NSINumero       :   .BLKL 4; Numero a String -> INumero
+DNSINumero      :   .LONG 12; Descriptor -> NSINumero
+                    .LONG NSINumero
+
+Numeros09       :   .BLKL Tamano; Arreglo -> Numeros09 (Tamano fisico = Tamano)
+LNumeros09      :   .LONG 0; Longitud -> Numeros09
+DNumeros09      :   .LONG 100; Descriptor -> Numeros09
+                    .LONG Numeros09
+
+AContador       :   .BLKL 10; Arreglo -> Contador (Tamano fisico = 10)
+LContador       :   .LONG 9; Longitud -> Contador
+DContador       :   .LONG 100; Descriptor -> Contador
+                    .LONG AContador
+
+Cont            :   .LONG 0; Variable de apoyo -> Contador
+LCont           :   .LONG 0; Longitud -> LCont
+SCont           :   .BLKL 4; String -> Cont
+DSCont          :   .LONG 9; Descriptor -> Cont
+                    .LONG SCont 
+
+IContador       :   .LONG 0; Variable de apoyo -> IContador (Variable para Imprimir Contador)
+LIContador      :   .LONG 0; Longitud -> IContador
+NSIContador     :   .BLKL 4; Numero a String -> IContador
+DNSIContador    :   .LONG 12; Descriptor -> NSIContador
+                    .LONG NSIContador
+
+Respuesta       :   .LONG 0; Variable de apoyo -> Respuesta (Indicara si se desea seguir realizando el ingreso de Numeros)
+
+LRespuesta      :   .LONG 0; Longitud -> Respuesta
+SRespuesta      :   .BLKL 4; String -> Respuesta
+DSRespuesta     :   .LONG 9; Descriptor -> Respuesta
+                    .LONG SRespuesta                                                      
+
+;===================LLENAR ARREGLO======================
+.MACRO Llenar_Arreglo Numeros, LNumeros, ?While, ?Out
+
+    MOVAL Numeros, R7
+    CLRL R8
+    MOVL #10, A; Determinara la ubicacion en cuanto a altura de los numeros ingresados
+
+    While:
+            CMPL R8, #100
+            SALTAR GTR Out
+
+            Write #22, A, negrita, Men4.0, pantalla
+            LEER LAuxiliar, MenValor, DAuxiliar
+            STR_NUM DAuxiliar, Auxiliar
+
+            TSTL Auxiliar
+            SALTAR EQL Out
+                    INCL A
+                    MOVL Auxiliar,(R7)[R8]
+                    INCL R8
+    BRW While
+
+    Out:
+            MOVL R8,LNumeros
+            DECL LNumeros
+            Limpiar_pantalla #79, #24, #1, #1, Pantalla
+
+.ENDM Llenar_Arreglo
+
+;====================IMPRIMIR ARREGLO====================
+.MACRO Imprimir_Arreglo Arreglo, Longitud, Descriptor, Sangria, ?For 
+
+    MOVAL Arreglo, R7
+    CLRL R8
+    MOVL #9, A
+
+    For:
+            MOVL (R7)[R8], INumero
+            NUM_STR INumero, Descriptor
+            Write Sangria, A, negrita, Descriptor, pantalla
+            INCL A
+
+    ACBL Longitud, #1, R8, For
+
+.ENDM Imprimir_Arreglo
+
+;================Factorial de Numeros====================
+.MACRO Factorial AEnteros, AFactoriales, Longitud, ?For1, ?For2, ?Else1, ?Else2, ?EndIf1, ?EndIf2
+
+    MOVAL AEnteros, R9
+    MOVAL AFactoriales, R10
+    CLRL R8
+
+    For1:
+            TSTL (R9)[R8]; n[i]?0
+            SALTAR EQL Else1
+                
+                ;n[i]<>0
+                    CLRL R11; Iteraciones = i := 0
+                    CLRL (R10)[R8]
+                    
+                    For2:
+                            TSTL R11; i?0
+                            SALTAR NEQ Else2
+                                    MOVL #1, (R10)[R8]; fac := 1
+                                    BRW EndIf2
+                                    
+                            Else2:; i<>0
+                                    MULL R11, (R10)[R8]; fac := fac * i 
+                            
+                            EndIf2:
+
+                    ACBL (R9)[R8], #1, R11, For2
+
+                    BRW EndIf1
+
+            Else1:; n[i] = 0
+                    MOVL #1, (R10)[R8]; fac[i] := 1
+
+            EndIf1:
+
+    ACBL Longitud, #1, R8, For1         
+
+.ENDM Factorial
+
+;===================Ordenar UN Arreglo======================
+.MACRO Ordenar_Arreglo Arreglo, Longitud, ?While, ?ElseIf, ?Else, ?Out
+
+    MOVL #11, A
+    While:
+            Write #11, A, negrita, Men4.0, pantalla
+            LEER LOrden, MenValor, DSOrden
+            STR_NUM DSOrden, Orden
+
+            CMPL Orden, #1
+            SALTAR NEQ ElseIf
+                    Ascendente Arreglo, Longitud
+                    BRW Out
+
+            ElseIf:
+            CMPL Orden, #2
+            SALTAR NEQ Else
+                    Descendente Arreglo, Longitud
+                    BRW Out
+
+            Else:
+                INCL A
+                Write #11, A, negrita, MenValorI, pantalla
+                ADDL #2, A
+                JMP While
+    Out:
+
+.ENDM Ordenar_Arreglo
+
+;===================Ordenar DOS Arreglo======================
+.MACRO Ordenar_Dos_Arreglos Arreglo1, Arreglo2, Longitud, ?While, ?ElseIf, ?Else, ?Out
+
+    MOVL #11, A
+    While:
+            Write #11, A, negrita, Men4.0, pantalla
+            LEER LOrden, MenValor, DSOrden
+            STR_NUM DSOrden, Orden
+
+            CMPL Orden, #1
+            SALTAR NEQ ElseIf
+                    Ascendente Arreglo1, Longitud
+                    Ascendente Arreglo2, Longitud
+                    BRW Out
+           
+            ElseIf:
+            CMPL Orden, #2
+            SALTAR NEQ Else
+                    Descendente Arreglo1, Longitud
+                    Descendente Arreglo2, Longitud
+                    BRW Out
+            
+            Else:
+                INCL A
+                Write #11, A, negrita, MenValorI, pantalla
+                ADDL #2, A
+                JMP While
+    
+    Out:
+
+.ENDM Ordenar_Dos_Arreglos
+
+;=============Metodo de la burbuja - Ascendente==========
+.MACRO Ascendente Arreglo, Longitud, ?ForA1, ?ForA2, ?EndIf
+
+    MOVAL Arreglo, R7
+    CLRL R8
+    SUBL3 #1, Longitud, R10
+
+    ForA1:
+            ADDL3 #1, R8, R11
+            
+            ForA2:
+                    CMPL (R7)[R8], (R7)[R11]
+                    SALTAR LSS EndIf
+                        ;Arreglo[i] >= Arreglo[j]
+                            MOVL (R7)[R8], B; B:= Arreglo[i]
+                            MOVL (R7)[R11], C; C:= Arreglo[j]
+                            MOVL B, (R7)[R11]; Arreglo[j]:= B
+                            MOVL C, (R7)[R8]; Arreglo[i]:= C
+
+                    EndIf:
+
+            ACBL Longitud, #1, R11, ForA2
+
+    ACBL R10, #1, R8, ForA1
+
+.ENDM Ascendente
+
+;=============Metodo de la burbuja - Descendente==========
+.MACRO Descendente Arreglo, Longitud, ?ForD1, ?ForD2, ?EndIf
+
+    MOVAL Arreglo, R7
+    CLRL R8
+    SUBL3 #1, Longitud, R10
+
+    ForD1:
+            ADDL3 #1, R8, R11
+            
+            ForD2:
+                    CMPL (R7)[R8], (R7)[R11]
+                    SALTAR GTR EndIf
+                        
+                        ;Arreglo[i] <= Arreglo[j]
+                            MOVL (R7)[R8], B; B:= Arreglo[i]
+                            MOVL (R7)[R11], C; C:= Arreglo[j]
+                            MOVL B, (R7)[R11]; Arreglo[j]:= B
+                            MOVL C, (R7)[R8]; Arreglo[i]:= C
+                    
+                    EndIf:
+            
+            ACBL Longitud, #1, R11, ForD2
+
+    ACBL R10, #1, R8, ForD1
+
+.ENDM Descendente
+
+;===================LLENAR ARREGLO 0-9======================
+.MACRO Llenar_Arreglo09 Numeros09, LNumeros09, ?While, ?While2, ?EndIf, ?Out
+
+    MOVAL Numeros09,R7
+    CLRL R8
+    MOVL #9, A
+
+    While:
+            CLRL Respuesta
+            Write #4, A, negrita, MenVacio, pantalla; Limpia linea completa
+            Write #12, A, negrita, Men4.0, pantalla; Posiciona mensaje
+            LEER LAuxiliar, MenValor, DAuxiliar
+            STR_NUM DAuxiliar, Auxiliar
+
+            ;(Valor Ingresado >= '0') AND (Valor Ingresado <= '9')
+            TSTL Auxiliar
+            SALTAR LSS, Out
+            CMPL Auxiliar, #9
+            SALTAR GTR, Out
+
+                    INCL A
+                    MOVL Auxiliar, (R7)[R8]
+                    INCL R8
+
+                    Write #8, A, negrita, Men4.0, pantalla
+                    LEER LRespuesta, Men11.4, DSRespuesta
+                    STR_NUM DSRespuesta, Respuesta
+                            
+                    While2: ;Recursividad: Si no se escoge el valor '1' o '2' se estara repitiendo el ciclo 'While2'
+
+                            CMPL Respuesta, #1
+                            SALTAR NEQ, EndIf
+                                    Write #4, A, negrita, MenVacio, pantalla
+                                    JMP While
+
+                            EndIf:
+                                    CMPL Respuesta, #2
+                                    SALTAR EQL Out
+                                            CLR_LINEA #77, A, #7, A, Pantalla
+                                            Write #11, A, negrita, MenValorI, pantalla; Valor Incorrecto
+                                            INCL A
+
+                                            CLRL Respuesta
+                                            Write #8, A, negrita, Men4.0, pantalla
+                                            LEER LRespuesta, Men11.4, DSRespuesta
+                                            STR_NUM DSRespuesta, Respuesta
+
+                                            Write #4, A, negrita, MenVacio, pantalla
+                                            DECL A
+                                            Write #4, A, negrita, MenVacio, pantalla
+                                            JMP While2
+
+    Out:
+            MOVL R8, LNumeros09
+            DECL LNumeros09
+
+.ENDM Llenar_Arreglo09
+
+;===================CONTADOR DE NUMEROS 0-9======================
+.MACRO Contador_Num Numeros09, LNumeros09, AContador, ?For1, ?For2, ?EndIf
+
+    MOVAL Numeros09, R7
+    MOVAL AContador, R8
+    CLRL R10
+
+    For1:
+            CLRL R9
+            CLRL Cont
+
+            For2:   
+                    CMPL R10, (R7)[R9]
+                    SALTAR NEQ EndIf
+                            INCL Cont
+                    EndIf:
+
+            ACBL LNumeros09, #1, R9, For2
+
+            MOVL Cont, (R8)[R10]
+
+    ACBL #9, #1, R10, For1
+
+.ENDM Contador_Num
+
+;===================IMPRIMIR CONTADOR DE NUMEROS 0-9======================
+.MACRO Imprimir_AContador Arreglo, Longitud, Descriptor, ?For
+
+    MOVAL Arreglo, R7
+    CLRL R8
+    MOVL #11, A
+
+    For:
+            MOVL R8, IContador
+            NUM_STR IContador, Descriptor
+            Write #15, A, negrita, Descriptor, pantalla
+
+            MOVL (R7)[R8], IContador
+            NUM_STR IContador, Descriptor
+            Write #55, A, negrita, Descriptor, pantalla
+
+            INCL A
+
+    ACBL Longitud, #1, R8, For
+
+.ENDM Imprimir_AContador
+
+;**********************    Limpia una region de la pantalla virtual *********
+    .MACRO LIMPIAR_PANTALLA Cf, Ff, Cc, Fc, Pant
+           PUSHAL  Cf
+           PUSHAL  Ff
+           PUSHAL  Cc
+           PUSHAL  Fc
+           PUSHAL  Pant
+           CALLS #5, G^SMG$ERASE_DISPLAY
+    .ENDM  LIMPIAR_PANTALLA
+
+;*******************  Coloca el cursor en la pantalla virtual *****************
+    .MACRO GOTOXY  Columna, Fila
+           PUSHL Columna
+           PUSHL Fila
+           CALLS #2,G^SCR$SET_CURSOR
+    .ENDM  GOTOXY
+
+;********************** Define el teclado virtual  ****************************
+    .MACRO CREA_TECLADO Keyboard
+           PUSHAL Keyboard
+           CALLS #1,G^SMG$CREATE_VIRTUAL_KEYBOARD
+    .ENDM  CREA_TECLADO
+
+;********************  Define un Marco ****************************************
+   .MACRO CREA_PIZARRON Piza
+          PUSHAL Piza
+          CALLS #1,G^SMG$CREATE_PASTEBOARD
+   .ENDM  CREA_PIZARRON
+
+; ********************* Define una pantalla virtual  **************************
+   .MACRO  CREAR_PANTALLA  Atributo, Pant, NumCol, NumFil
+           PUSHAL Atributo
+           PUSHAL Pant
+           PUSHAL NumCol
+           PUSHAL NumFil
+           CALLS #4,G^SMG$CREATE_VIRTUAL_DISPLAY
+   .ENDM   CREAR_PANTALLA
+
+;********************** Pega una pantalla en un Marco  ************************
+   .MACRO PEGAR_PANTALLA Piza, Pant
+         PUSHAL #1
+          PUSHAL #1
+          PUSHAL Piza
+                    PUSHAL Pant
+          CALLS #4,G^SMG$PASTE_VIRTUAL_DISPLAY
+   .ENDM  PEGAR_PANTALLA
+
+;***********************  Dibuja un cuadro ************************************
+.MACRO RECTANGULO Cf, Ff, Cc, Fc, Pant
+         PUSHAL Cf
+         PUSHAL Ff
+         PUSHAL Cc
+         PUSHAL Fc
+         PUSHAL Pant
+         CALLS #5,G^SMG$DRAW_RECTANGLE
+.END RECTANGULO
+
+;**********************     Lee una tecla Sin eco en la pantalla *************
+    .MACRO READKEY  Tecl, Teclad
+           PUSHAL Tecl
+           PUSHAL Teclad
+           CALLS #2,G^SMG$READ_KEYSTROKE
+    .ENDM  READKEY
+
+;*****************  Escribe tiras de caracteres de tamano normal **************
+   .MACRO WRITE   Col, Fil, Atrib, Men, Vent
+          PUSHAL   Atrib
+          PUSHAL   #0
+                    PUSHAL   Col
+          PUSHAL   Fil
+          PUSHAL   Men
+          PUSHAL   Vent
+          CALLS #6,G^SMG$PUT_CHARS
+    .ENDM WRITE
+
+;******************   Escribe tiras de caracteres en tamano doble *************
+   .MACRO WRITE_DOB   Col, Fil, Atrib, Men, Vent
+          PUSHAL   Atrib
+          PUSHAL   Col
+          PUSHAL   Fil
+          PUSHAL   Men
+          PUSHAL   Vent
+          CALLS #5,G^SMG$PUT_CHARS_HIGHWIDE
+    .ENDM  WRITE_DOB
+
+;**********************   Borra una linea  ************************************
+    .MACRO CLR_LINEA Cf,Ff,Cc,Fc,pantalla
+           PUSHAL  Cf
+           PUSHAL  Ff
+           PUSHAL  Cc
+           PUSHAL  Fc
+           PUSHAL  Pantalla
+                      CALLS #5, G^SMG$DRAW_LINE
+    .ENDM  CLR_LINEA
+
+;**********************   Para Realizar Saltos Largos  ************************
+    .MACRO SALTAR  Cond, Etiqueta, ?Opci1, ?Opci2
+      B'Cond  Opci1
+      BRB     Opci2
+      Opci1: JMP Etiqueta
+      Opci2: NOP
+    .ENDM SALTAR
+
+;=====================================================================
+.MACRO STR_NUM descriptor, numero
+
+	PUSHAL numero
+	PUSHAL descriptor
+	CALLS #2, G^OTS$CVT_TU_L
+
+.ENDM STR_NUM
+
+;=====================================================================
+.MACRO NUM_STR numero, descriptor
+
+	PUSHAL descriptor
+	PUSHAL numero
+	CALLS #2, G^OTS$CVT_L_TU
+
+.ENDM NUM_STR
+
+;=====================================================================
+    .MACRO LEER lon, men, desc_tira
+        PUSHAL lon
+        PUSHAL men
+        PUSHAL desc_tira
+        CALLS #3, G^LIB$GET_INPUT
+        MOVL lon, desc_tira
+    .ENDM LEER
+
+;=====================================================================
+    .MACRO IMPRIMIR mensaje
+        PUSHAL mensaje
+        CALLS #1, G^LIB$PUT_OUTPUT
+    .ENDM IMPRIMIR
+
+;==============================================================
+.MACRO CUADRO
+          Limpiar_pantalla #79, #24, #1, #1, Pantalla
+          Rectangulo #80, #24, #1, #1, pantalla         ;grande 1
+          Rectangulo #78, #22, #3, #2, pantalla         ;grande 2
+ .ENDM CUADRO
+
+
+;-----------------------MACROS---------------------------------
+.MACRO OPCION_DOS Numeros, LNumeros, Factoriales
+    CUADRO
+    Write_DOB  #30,  #4,  negrita, Men9, pantalla
+    Write #23, #23, blink, Men5, pantalla
+    Write #11, #7, negrita, Men9.1, pantalla
+    Write #22, #8, negrita, Men4.0, pantalla
+        
+        Llenar_Arreglo Numeros, LNumeros
+        CUADRO
+        Write #11, #3, negrita, Men4.0, pantalla
+        Write #7, #4, negrita, MenCargado, pantalla
+        Write #11, #5, negrita, Men4.0, pantalla
+        Write #10, #7, negrita, Men9.2.1, pantalla
+        Write #50, #7, negrita, Men9.2.2, pantalla
+
+        MOVL #15, D; Se establece una Sangria de '15' espacios.
+        Imprimir_Arreglo Numeros, LNumeros, DNSINumero, D
+        Factorial Numeros, Factoriales, LNumeros
+        MOVL #59, D; Se establece una Sangria de '59' espacios.
+        Imprimir_Arreglo Factoriales, LNumeros, DNSINumero, D
+        Write #23, #23, blink, Men5, pantalla
+
+        READKEY Tecla, Teclado; Pausa en pantalla
+
+        Limpiar_pantalla #79, #24, #1, #1, Pantalla
+        CUADRO
+        Write #23, #23, blink, Men5, pantalla
+        Write_DOB  #30, #4, negrita, Men9.0, pantalla
+        Write #11, #7, negrita, Men9.3, pantalla
+        Write #11, #8, negrita, Men9.3.1, pantalla
+        Write #11, #9, negrita, Men9.3.2, pantalla
+        Ordenar_Dos_Arreglos Numeros, Factoriales, LNumeros
+
+        Limpiar_pantalla #79, #24, #1, #1, Pantalla
+        CUADRO
+        Write_DOB  #30, #4, negrita, Men9.3.3, pantalla
+        Write #11, #6, negrita, Men4.0, pantalla
+        Write #10, #7, negrita, Men9.2.1, pantalla
+        Write #50, #7, negrita, Men9.2.2, pantalla
+
+        MOVL #15, D; Se establece una Sangria de '15' espacios.
+        Imprimir_Arreglo Numeros, LNumeros, DNSINumero, D
+        MOVL #59, D; Se establece una Sangria de '59' espacios.
+        Imprimir_Arreglo Factoriales, LNumeros, DNSINumero, D
+        
+        Write #23, #23, blink, Men5, pantalla
+                
+.ENDM OPCION_DOS
+
+.MACRO OPCION_TRES Numeros09, LNumeros09, AContador, LContador
+    CUADRO
+    Write_DOB  #30,  #4,  negrita, Men11, pantalla
+    Write #23, #23, blink,   Men5, pantalla
+    Write #11, #7, negrita, Men11.1, pantalla
+    Write #22, #8, negrita, Men4.0, pantalla
+    
+        Llenar_Arreglo09 Numeros09, LNumeros09
+        Contador_Num Numeros09, LNumeros09, AContador
+        CUADRO
+        Write_DOB  #30, #4, negrita, Men11.6, pantalla
+        Write #15, #7, negrita, MenCargado, pantalla
+        Write #12, #9, negrita, Men11.2, pantalla
+        Write #50, #9, negrita, Men11.3, pantalla
+    
+        Imprimir_AContador AContador, LContador, DNSIContador
+        
+        Write #22, #23, blink, Men5, pantalla
+
+.ENDM OPCION_TRES
+
+
+;=====================SECCION DE CODIGO===============================
+.PSECT Codigo, EXE,NOWRT,LONG
+.ENTRY Libreria, 0
+
+;--------------------------PORTADA-----------------------------------
+          CREA_TECLADO Teclado
+          CREA_PIZARRON Pizarron
+          CREAR_PANTALLA  Normal, Pantalla, #80, #24
+          PEGAR_PANTALLA Pizarron, Pantalla
+          opc1:Limpiar_pantalla #79, #24, #1, #1, Pantalla
+          Rectangulo #81, #20, #1, #1, pantalla         ;grande 1
+          Rectangulo #78, #20, #3, #2, pantalla         ;grande 2
+          Rectangulo #80, #24, #1, #22, pantalla        ;pequeno
+          Write #20, #4,  negrita, Men0, pantalla
+          Write #15, #5,  negrita, Men1, pantalla
+          Write #22, #6,  negrita, Men2, pantalla
+          Write #22, #12, negrita, Men3, pantalla
+          Write #22, #13, blink, Men3.1, pantalla
+          Write #22, #14, negrita, Men4.0, pantalla
+          Write #17, #15, negrita, Men4.1, pantalla
+          Write #17, #16, negrita, Men4.2, pantalla
+          Write #17, #17, negrita, Men4.3, pantalla
+          Write #20, #23, blink, Men4, pantalla
+          ReadKey Tecla, Teclado
+
+;---------------------MENU--------------------------------
+     pan2:Limpiar_pantalla #79, #24, #1, #1, Pantalla
+          Rectangulo #81, #2,  #1, #1,    pantalla      ;grande 1
+          Rectangulo #78, #20, #3, #2,    pantalla      ;grande 2
+          Rectangulo #80, #24, #1, #22,   pantalla      ;pequeno
+          Write #23, #23, blink,   Men5, pantalla
+          Write #8,  #10, inversa, Men6, pantalla
+          Write #12, #10, negrita, Men7, pantalla
+          Write #38, #10, inversa, Men8, pantalla
+          Write #42, #10, negrita, Men9, pantalla
+          Write #8,  #12, inversa, Men10, pantalla
+          Write #12, #12, negrita, Men11, pantalla
+          Write_DOB  #30,  #4,  negrita, Men12, pantalla
+          Write #38, #12, inversa, Men13, pantalla
+          Write #42, #12, negrita, Men14, pantalla
+
+ ;------------------------BOTONES----------------------------------
+     ning:ReadKey Tecla, Teclado
+          cmpb Tecla, #^A/1/
+          SALTAR eql, opc1
+          cmpb Tecla, #^A/2/
+          SALTAR  eql, opc2
+          cmpb Tecla, #^A/3/
+          SALTAR eql, opc3
+          cmpb Tecla, #^A/4/
+          SALTAR eql, opc4
+          jmp ning
+    opc2: OPCION_DOS Numeros, LNumeros, Factoriales
+          ReadKey tecla, teclado
+          jmp pan2
+    opc3: OPCION_TRES Numeros09, LNumeros09, AContador, LContador
+          ReadKey tecla, teclado
+          jmp pan2
+    opc4:Limpiar_pantalla #79, #24, #1, #1, Pantalla
+          RET
+.END Libreria
