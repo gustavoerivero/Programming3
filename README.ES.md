@@ -13,13 +13,9 @@ Proyecto que corresponde a la asignatura Programación III de Ingeniería en Inf
 
 ## Características:
 
-* 
-
-## Hecho con:
-
-* The MVC pattern is used.
-* The application was made in Java language.
-* The application uses PostgreSQL as a database handler.
+* Lectura de números y cálculo de factorial.
+* Ordenamiento de los números.
+* Conteo de repeticiones de números en arreglo numérico en el rango [0,9]
 
 ## Aplicación Assembler:
 
